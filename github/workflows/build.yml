@@ -1,0 +1,29 @@
+# .github/workflows/build.yml
+name: Build and Test Spring Boot
+
+on:
+  push:
+    branches: [ main ] # or master
+  pull_request:
+    branches: [ main ] # or master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Use a Linux environment
+
+    steps:
+      - uses: actions/checkout@v3 # Checkout your code
+      - name: Set up JDK 17  # Specify your Java version
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17' # Or your JDK version
+          distribution: 'temurin' # or 'adopt'
+      - name: Cache Maven dependencies # Optional: Cache dependencies for faster builds
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Build and Test with Maven
+        run: mvn clean install
